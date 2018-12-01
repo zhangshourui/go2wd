@@ -5,6 +5,15 @@ import(
 	"net/http"
 	"html/template"
 	"web/model"
+	"net"
+	"log"
+	"flag"
+	"io/ioutil"
+	"strconv"
+)
+
+var (
+	addr = flag.Bool("addr", true, "find open address and print to final-port.txt")
 )
 
 func  main()  {
@@ -12,29 +21,49 @@ func  main()  {
 //	fmt.Println(page);
 
 	// http.HandleFunc("/", handler)
+	flag.Parse()
+	http.HandleFunc("/", makeHandler(defaultHandler))
+
+	if *addr {
+		fmt.Println("Listen 127.0.0.1:0")
+		l, err := net.Listen("tcp", "127.0.0.1:8081")
+   		if err != nil {
+   			log.Fatal(err)
+   		}
+   		err = ioutil.WriteFile("final-port.txt", []byte(l.Addr().String()), 0644)
+   		if err != nil {
+   			log.Fatal(err)
+   		}
+   		s := &http.Server{}
+   		s.Serve(l)
+   		return
+   	}
+
 	root := "/"
 	port := 8080
 	fmt.Println("Initializing With Root", root)
-	fmt.Println("Listening At ", port)
+	fmt.Println("Listening :"+strconv.Itoa(port))
 
-	http.HandleFunc("/", makeHandler(defaultHandler))
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+strconv.Itoa(port), nil)
 }
 
 
 func makeHandler(fn func (http.ResponseWriter, *http.Request, *model.PageModel)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var filePath = "."+r.URL.Path
-		fmt.Println("GET", filePath)
+		fmt.Printf("%s %s\r\n",r.Method, filePath)
 
-		p, err := model.LoadPage(filePath, "")
+		p, err := model.LoadPage(filePath, "Index")
 		if err != nil {
-			p = &model.PageModel{Title: "", Path: "N/A"}
+			p = &model.PageModel{Title: "Index", Path: filePath}
 			/*
 			http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 			return
 		*/
+		} else{
+			p.Body=[]byte("testasdfasdf");
 		}
+
 
 		fn(w, r, p)
 
@@ -49,10 +78,11 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *model.PageModel) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    err = t.Execute(w, p)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-    }
+//	err = t.Execute(w, p)
+	log.Println(t.Execute(w, p))
+   // if err != nil {
+   //     http.Error(w, err.Error(), http.StatusInternalServerError)
+   // }
 }
 
 func defaultHandler (w http.ResponseWriter, r *http.Request, page *model.PageModel) {
