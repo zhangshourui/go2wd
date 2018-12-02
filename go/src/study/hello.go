@@ -10,8 +10,8 @@ import (
 	//"image"
 )
 // import "./src/tools/kit/getBigger"
-
-func main(){
+ 
+func _main(){
 	//var a =123
 	
 	// math

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="description" content="中酒云图，精细化运营首选平台" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+    <title>中酒云图-后台管理系统</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<body class="container">
+    <!--
+<h1>{{.Title}}</h1>
+
+<p>[<a href="/edit/{{.Title}}">edit</a>]</p>
+
+<div>{{printf "%s" .Body}}</div>
+-->
+    <form method="post" action="index.html" class=" form-horizontal">
+        <div class="form-group">
+            <label class="control-label">User Name: <input type="text" name="userName" value="John Sherry" class="form-control"></label>
+        </div>
+        <div class="form-group">
+            <label>Age:  </label><input type="number" name="age" value="30" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">That's All.</button>
+        <button type="reset" class="btn btn-danger">No! Reset it! </button>
+    </form>
+</body>
+
+</html>
